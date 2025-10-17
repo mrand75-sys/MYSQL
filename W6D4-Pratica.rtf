@@ -81,3 +81,70 @@ FROM
 JOIN 
     dimproduct AS p ON f.ProductKey = p.ProductKey;
 
+SELECT *
+FROM SalesPerson;
+
+SELECT *
+FROM factsales;
+
+# ESERCIZIO 2
+#1 SalesOrderNumber SalesOrderLineNumber ProductKey ResellerKey UnitPrice SalesAmount TotalProductCost
+SELECT 
+    f.SalesOrderNumber,
+    f.SalesOrderLineNumber,
+    f.ProductKey,
+    p.EnglishProductName,
+    c.productCategoryKey,
+    c.englishProductCategoryName,
+    f.ResellerKey,
+    f.UnitPrice,
+    f.SalesAmount,
+    f.TotalProductCost
+FROM 
+    factresellersales AS f
+JOIN 
+    dimproduct AS p ON f.ProductKey = p.ProductKey
+JOIN 
+    dimproductsubcategory AS s ON p.ProductSubcategoryKey = s.ProductSubcategoryKey
+JOIN 
+    dimproductcategory AS c ON s.ProductCategoryKey = c.ProductCategoryKey;
+    
+#2 Esplora la tabella DimReseller
+SELECT *
+FROM dimreseller;
+#ResellerKey GeographyKey ResellerAlternateKey BusinessType ResellerName NumberEmployees OrderFrequency ProductLine
+
+#3. Esponi in output lʼelenco dei reseller indicando, per ciascun reseller, anche la sua area geografica
+SELECT 
+    ResellerKey,
+    ResellerName,
+    GeographyKey    
+    
+FROM 
+    dimreseller;
+
+#4.  Esponi lʼelenco delle transazioni di vendita. Il result set deve esporre i campi: 
+#SalesOrderNumber, SalesOrderLineNumber, OrderDate, UnitPrice, Quantity, TotalProductCost. 
+#Il result set deve anche indicare il nome del prodotto, il nome della categoria del prodotto, il nome del reseller e lʼarea geografica.
+
+SELECT 
+    f.SalesOrderNumber,
+    f.SalesOrderLineNumber,
+    f.OrderDate,
+    f.UnitPrice,
+    f.OrderQuantity AS Quantity,
+    f.TotalProductCost,
+    p.EnglishProductName,
+    c.EnglishProductName,
+    r.ResellerName,
+    r.GeographyKey
+FROM 
+    factresellersales AS f
+JOIN 
+    dimproduct AS p ON f.ProductKey = p.ProductKey
+JOIN 
+    dimproduct AS s ON p.ProductSubcategoryKey = s.ProductSubcategoryKey
+JOIN 
+    dimproduct AS c ON s.ProductAlternateKey = c.ProductAlternateKey
+JOIN 
+    dimreseller AS r ON f.ResellerKey = r.ResellerKey;
