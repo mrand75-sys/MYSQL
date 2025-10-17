@@ -1,0 +1,83 @@
+#Interrogare e filtrare le tabelle Esercizio Schema concettuale Dove possibile svolgi gli esercizi utilizzando sia JOIN che SUBQUERY
+
+
+
+
+
+
+
+USE AdventureWorksDW;
+select *
+from dimproduct;
+#ProductKey ProductAlternateKey EnglishProductName   FinishedGoodsFlag ProductSubcategoryKey SpanishProductName FrenchProductName
+select *
+from dimproductsubcategory;
+#ProductSubcategoryKey  ProductSubcategoryAlternateKey  EnglishProductSubcategoryName  SpanishProductSubcategoryName FrenchProductSubcategoryName ProductCategoryKey
+
+
+#1. Esponi lʼanagrafica dei prodotti indicando per ciascun prodotto anche la sua sottocategoria DimProduct, DimProductSubcategory).
+SELECT
+	p.productkey,
+    p.EnglishProductName,
+    p.finishedGoodsFlag,
+    p.ProductSubcategoryKey,
+    s.EnglishProductSubcategoryName
+FROM
+	dimproduct AS p
+JOIN
+	dimproductsubcategory AS s
+ON
+	p.ProductSubcategoryKey = s.ProductSubcategoryKey;
+
+#2. Esponi lʼanagrafica dei prodotti indicando per ciascun prodotto la sua sottocategoria e la sua categoria DimProduct, DimProductSubcategory, DimProductCategory).
+SELECT
+	p.ProductKey,
+    p.EnglishProductName,
+    p.FinishedGoodsFlag,
+    p.ProductSubcategoryKey,
+    s.EnglishProductSubcategoryName
+FROM
+	dimproduct AS p
+JOIN 
+    dimproductsubcategory AS s ON p.ProductSubcategoryKey = s.ProductSubcategoryKey
+JOIN 
+    dimproductcategory AS c ON s.ProductCategoryKey = c.ProductCategoryKey;
+
+#3. Esponi lʼelenco dei soli prodotti venduti DimProduct, FactResellerSales). 
+SELECT DISTINCT
+    p.ProductKey,
+    p.EnglishProductName
+FROM 
+    dimproduct AS p
+JOIN 
+    factresellersales AS f ON p.ProductKey = f.ProductKey;
+    
+
+#4. Esponi lʼelenco dei prodotti non venduti (considera i soli prodotti finiti cioè quelli per i quali il campo FinishedGoodsFlag è uguale a 1.
+SELECT 
+    p.ProductKey,
+    p.EnglishProductName
+FROM 
+    dimproduct AS p
+LEFT JOIN 
+    factresellersales AS f ON p.ProductKey = f.ProductKey
+WHERE 
+    p.FinishedGoodsFlag = 1
+    AND f.ProductKey IS NULL;
+    
+    
+    
+#5. Esponi lʼelenco delle transazioni di vendita FactResellerSales) indicando anche il nome del prodotto venduto DimProduct)
+SELECT 
+    f.SalesOrderLineNumber,
+    f.SalesOrderLineNumber,
+    f.OrderDate,
+    f.ProductKey,
+    p.EnglishProductName,
+    f.SalesAmount,
+    f.ResellerKey
+FROM 
+    factresellersales AS f
+JOIN 
+    dimproduct AS p ON f.ProductKey = p.ProductKey;
+
